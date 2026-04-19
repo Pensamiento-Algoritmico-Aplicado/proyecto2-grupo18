@@ -1,1 +1,16 @@
-# proyecto2-grupo18
+# HITO 2 - MONITOREO DE VIBRACIONES
+
+INTEGRANTES:
+
+    - BALTAZAR CAMPINO GARCIA
+    
+    - DOMINGO CAMPINO GARCIA
+    
+    - M. TRINIDAD RIBAO BRAVO
+
+## COMO EJECUTAR
+
+1. CREAR VIRTUAL ENVIRONMENT: `python -m venv .venv`
+2. ACTIVAR: `source .venv/bin/activate`
+3. INSTALAR DEPENDENCIAS: `pip install -r reqirements.txt`
+4. EJECUTAR: 
