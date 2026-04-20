@@ -66,5 +66,51 @@ def procesar_consultas(archivo_consultas: str, archivo_salida: str) -> None:
                 valores = sensores[clave]['valores']
                 picos = [horas[i] for i, v in enumerate(valores) if v > umbral]
                 resultados.append(','.join(picos) if picos else 'NONE')
+ # ── RANGO_TEMP_TS <sector> <ts_ini> <ts_fin> ──────────────────
+            elif tipo == 'RANGO_TEMP_TS':
+                clave = (partes[1], 'TEMP')
+                if clave not in sectores:
+                    resultados.append('NODATA')
+                    continue
+                horas = sectores[clave]['horas']
+                valores = sectores[clave]['valores']
+                i = bisect_left(horas, partes[2])
+                j = bisect_right(horas, partes[3])
+                if i < j:
+                    sub = valores[i:j]
+                    resultados.append(
+                        f"{truncar(min(sub))},{truncar(max(sub))},{truncar(sum(sub)/len(sub))}"
+                    )
+                else:
+                    resultados.append('NODATA')
  
+            # ── SENSORES_SECTOR <sector> ───────────────────────────────────
+            elif tipo == 'SENSORES_SECTOR':
+                sector = partes[1]
+                if sector not in sensores_sector:
+                    resultados.append('NODATA')
+                    continue
+                lista = sorted(sensores_sector[sector], key=lambda s: int(s[1:]))
+                resultados.append(','.join(lista))
+ 
+            # ── SIGUIENTE_MEDICION <sensor> <tipo_med> <timestamp> ─────────
+            elif tipo == 'SIGUIENTE_MEDICION':
+                clave = (partes[1], partes[2])
+                ts = partes[3]
+                if clave not in sensores:
+                    resultados.append('NODATA')
+                    continue
+                horas = sensores[clave]['horas']
+                valores = sensores[clave]['valores']
+                i = bisect_right(horas, ts)   # estrictamente posterior
+                if i < len(horas):
+                    resultados.append(f"{horas[i]},{truncar(valores[i])}")
+                else:
+                    resultados.append('NONE')
+ 
+    with open(archivo_salida, 'w') as f:
+        f.write('\n'.join(resultados) + '\n')
+ 
+if __name__ == '__main__':
+    procesar_consultas(sys.argv[1], sys.argv[2])
           
