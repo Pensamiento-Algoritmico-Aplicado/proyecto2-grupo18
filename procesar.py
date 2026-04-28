@@ -47,5 +47,30 @@ def ejecutar():
             except Exception:
                 continue
 
+    os.makedirs('db_datos', exist_ok=True)
+    meta_sec = set()
+    meta_sen = set()
+
+    for k, (t, v) in sectores.items():
+        t_arr = np.frombuffer(t, dtype=np.int64)
+        v_arr = np.frombuffer(v, dtype=np.float64)
+        idx = np.argsort(t_arr)
+        nombre = f"sec_{k[0]}_{k[1]}"
+        np.save(f"db_datos/{nombre}_t.npy", t_arr[idx])
+        np.save(f"db_datos/{nombre}_v.npy", v_arr[idx])
+        meta_sec.add(k)
+
+    for k, (t, v) in sensores.items():
+        t_arr = np.frombuffer(t, dtype=np.int64)
+        v_arr = np.frombuffer(v, dtype=np.float64)
+        idx = np.argsort(t_arr)
+        nombre = f"sen_{k[0]}_{k[1]}"
+        np.save(f"db_datos/{nombre}_t.npy", t_arr[idx])
+        np.save(f"db_datos/{nombre}_v.npy", v_arr[idx])
+        meta_sen.add(k)
+
+    with open('db_datos/meta.pkl', 'wb') as f:
+        pickle.dump({'sec': meta_sec, 'sen': meta_sen, 'map': map_sec_sen}, f)
+
 if __name__ == '__main__':
     ejecutar()
