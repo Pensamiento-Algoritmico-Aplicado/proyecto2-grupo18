@@ -30,5 +30,44 @@ def ejecutar():
             cache_mmap[nombre] = (t, v)
         return cache_mmap[nombre]
 
+    with open(sys.argv[1], 'r', encoding='utf-8') as f:
+        for linea in f:
+            linea = linea.strip()
+            if not linea: continue
+            
+            p = linea.split()
+            cmd = p[0]
+            res = "NODATA"
+
+            if cmd == 'MAX_VIB_RANGO':
+                k = (p[1], 'VIB')
+                if k in meta_sec:
+                    t, v = get_arrays('sec', k)
+                    i = np.searchsorted(t, ts_a_int(p[2]), side='left')
+                    j = np.searchsorted(t, ts_a_int(p[3]), side='right')
+                    if i < j: res = tr(np.max(v[i:j]))
+
+            elif cmd == 'PROM_TEMP':
+                k = (p[1], 'TEMP')
+                if k in meta_sec:
+                    t, v = get_arrays('sec', k)
+                    ini = int(p[2].replace('-','')) * 1000000
+                    fin = int(p[2].replace('-','')) * 1000000 + 235959
+                    i = np.searchsorted(t, ini, side='left')
+                    j = np.searchsorted(t, fin, side='right')
+                    if i < j: res = tr(np.mean(v[i:j]))
+
+            elif cmd == 'RANGO_TEMP_TS':
+                k = (p[1], 'TEMP')
+                if k in meta_sec:
+                    t, v = get_arrays('sec', k)
+                    i = np.searchsorted(t, ts_a_int(p[2]), side='left')
+                    j = np.searchsorted(t, ts_a_int(p[3]), side='right')
+                    if i < j:
+                        sub = v[i:j]
+                        res = f"{tr(np.min(sub))},{tr(np.max(sub))},{tr(np.mean(sub))}"
+            
+            respuestas.append(res)
+
 if __name__ == '__main__':
     ejecutar()
