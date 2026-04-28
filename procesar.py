@@ -1,4 +1,11 @@
 import sys
+import os
+import pickle
+import array
+import numpy as np
+
+def ts_a_int(ts: str) -> int:
+    return int(ts[0:4]+ts[5:7]+ts[8:10]+ts[11:13]+ts[14:16]+ts[17:19])
 
 def ejecutar():
     if len(sys.argv) < 2: return
@@ -16,6 +23,8 @@ def ejecutar():
                 v_num = float(val_str)
                 if tipo == 'VIB' and not (0.0 <= v_num <= 50.0): continue
                 if tipo == 'TEMP' and not (-10.0 <= v_num <= 60.0): continue
+                
+                t_int = ts_a_int(ts_str)
             except Exception:
                 continue
 
