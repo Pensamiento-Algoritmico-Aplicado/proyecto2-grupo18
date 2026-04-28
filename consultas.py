@@ -66,6 +66,32 @@ def ejecutar():
                     if i < j:
                         sub = v[i:j]
                         res = f"{tr(np.min(sub))},{tr(np.max(sub))},{tr(np.mean(sub))}"
+
+            elif cmd == 'PICOS_VIB':
+                k = (p[1], 'VIB')
+                if k in meta_sen:
+                    t, v = get_arrays('sen', k)
+                    umbral = float(p[2])
+                    indices = np.where(v > umbral)[0] 
+                    if len(indices) > 0:
+                        res = ','.join([int_a_ts(t[idx]) for idx in indices])
+                    else:
+                        res = "NONE"
+
+            elif cmd == 'SENSORES_SECTOR':
+                if p[1] in mapeo:
+                    lista = sorted(list(mapeo[p[1]]), key=lambda x: int(x[1:]))
+                    res = ','.join(lista)
+
+            elif cmd == 'SIGUIENTE_MEDICION':
+                k = (p[1], p[2])
+                if k in meta_sen:
+                    t, v = get_arrays('sen', k)
+                    idx = np.searchsorted(t, ts_a_int(p[3]), side='right')
+                    if idx < len(t):
+                        res = f"{int_a_ts(t[idx])},{tr(v[idx])}"
+                    else:
+                        res = "NONE"
             
             respuestas.append(res)
 
